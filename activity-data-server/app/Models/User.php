@@ -11,7 +11,7 @@ use Laravel\Passport\HasApiTokens;
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasApiTokens,HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -42,5 +42,18 @@ class User extends Authenticatable
         return [
             'password' => 'hashed',
         ];
+    }
+    
+    /**
+     * Get the activity details for the user.
+     */
+    public function activityDetails()
+    {
+        return $this->hasMany(ActivityDetail::class);
+    }
+    
+    public function aiPredictions()
+    {
+        return $this->hasMany(AiPrediction::class);
     }
 }
