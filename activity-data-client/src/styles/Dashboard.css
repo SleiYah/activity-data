@@ -5,7 +5,11 @@
     padding: 2rem;
     margin-bottom: 2rem;
   }
-  
+  .dashboard-container {
+    padding: 1rem 0;
+    width: 100%;
+}
+
   .dashboard-header {
     margin-bottom: 2rem;
     border-bottom: 1px solid #e2e8f0;

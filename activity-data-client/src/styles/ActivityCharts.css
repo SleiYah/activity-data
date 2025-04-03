@@ -1,0 +1,41 @@
+.charts-container {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    width: 100%;
+  }
+  
+  .chart-wrapper {
+    background-color: white;
+    border-radius: 8px;
+    padding: 1rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    height: 300px;
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+  }
+  
+  .chart-loading,
+  .chart-error,
+  .chart-empty {
+    text-align: center;
+    padding: 2rem;
+    border-radius: 8px;
+    background-color: #f9fafc;
+    margin: 1rem 0;
+  }
+  
+  .chart-loading {
+    color: #718096;
+  }
+  
+  .chart-error {
+    color: #e53e3e;
+    border-left: 4px solid #e53e3e;
+  }
+  
+  .chart-empty {
+    color: #4b5563;
+    border: 1px dashed #e2e8f0;
+  }

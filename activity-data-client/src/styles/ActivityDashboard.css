@@ -1,0 +1,56 @@
+.activity-dashboard {
+    width: 100%;
+  }
+  
+  .dashboard-tabs {
+    display: flex;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid #e2e8f0;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .tab-button {
+    padding: 0.75rem 1.5rem;
+    background: none;
+    border: none;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #4b5563;
+    position: relative;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  
+  .tab-button::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 3px;
+    background-color: #4a6cf7;
+  }
+  
+  .tab-button:hover {
+    color: #4a6cf7;
+  }
+  
+  .tab-button.active {
+    color: #4a6cf7;
+  }
+  
+  .tab-button.active::after {
+    width: 100%;
+  }
+  
+  .tab-content {
+    padding: 1rem 0;
+  }
+  
+  @media (max-width: 768px) {
+    .tab-button {
+      padding: 0.75rem 1rem;
+      font-size: 0.9rem;
+    }
+  }

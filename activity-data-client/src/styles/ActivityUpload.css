@@ -1,0 +1,133 @@
+
+  
+  /* Upload Component Styles */
+  .upload-container {
+    background-color: #f8fafc;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    margin-bottom: 2rem;
+    border: 1px solid #e2e8f0;
+  }
+  
+  .upload-container h3 {
+    margin-bottom: 0.75rem;
+    color: #2d3748;
+    font-size: 1.25rem;
+  }
+  
+  .upload-instructions {
+    color: #718096;
+    margin-bottom: 1.25rem;
+    font-size: 0.95rem;
+  }
+  
+  .file-input-container {
+    margin-bottom: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .file-input {
+    padding: 0.5rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    background-color: #fff;
+  }
+  
+  .file-name {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #4a6cf7;
+    margin-left: 0.5rem;
+  }
+  
+  .upload-actions {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+  
+  .upload-btn {
+    background-color: #4a6cf7;
+    color: #fff;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 6px;
+    font-weight: 500;
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+  }
+  
+  .upload-btn:hover:not(:disabled) {
+    background-color: #3651d4;
+    transform: translateY(-2px);
+  }
+  
+  .upload-btn:disabled {
+    background-color: #a0aec0;
+    cursor: not-allowed;
+  }
+  
+  .reset-btn {
+    background-color: #f7fafc;
+    color: #4b5563;
+    padding: 0.75rem 1.5rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    font-weight: 500;
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+  }
+  
+  .reset-btn:hover {
+    background-color: #e2e8f0;
+  }
+  
+  .upload-success,
+  .upload-error {
+    padding: 1.25rem;
+    border-radius: 8px;
+    margin-top: 1.5rem;
+  }
+  
+  .upload-success {
+    background-color: #f0fff4;
+    border-left: 4px solid #48bb78;
+  }
+  
+  .upload-error {
+    background-color: #fff5f5;
+    border-left: 4px solid #e53e3e;
+  }
+  
+  .upload-success h4,
+  .upload-error h4 {
+    margin-bottom: 0.5rem;
+  }
+  
+  .upload-success h4 {
+    color: #276749;
+  }
+  
+  .upload-error h4 {
+    color: #c53030;
+  }
+  
+  .upload-success ul {
+    margin: 0.75rem 0 1rem 1.5rem;
+  }
+  
+  .dismiss-btn {
+    background: none;
+    border: none;
+    color: #4a6cf7;
+    font-weight: 500;
+    padding: 0;
+    cursor: pointer;
+  }
+  
+  .dismiss-btn:hover {
+    text-decoration: underline;
+  }
