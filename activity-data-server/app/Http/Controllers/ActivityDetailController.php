@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\AiPredictionsEvent;
 use App\Models\ActivityDetail;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -82,7 +83,7 @@ class ActivityDetailController extends Controller
                     continue;
                 }
                 
-                // Create a record with proper key mappings
+                // make a record with proper key mappings
                 $record = [];
                 foreach ($headers as $headerIndex => $header) {
                     $record[$header] = $values[$headerIndex] ?? null;
@@ -114,7 +115,7 @@ class ActivityDetailController extends Controller
                             ActivityDetail::insert($batch);
                             $insertedCount += count($batch);
                         } catch (\Exception $e) {
-                            // Fall back to inserting records one by one if batch insert fails
+                            // insert records one by one if batch insert fails
                             foreach ($batch as $item) {
                                 try {
                                     ActivityDetail::create($item);
@@ -131,7 +132,12 @@ class ActivityDetailController extends Controller
                     }
                 }
             }
-            
+            if ($insertedCount > 0) {
+
+            event(new AiPredictionsEvent($userId));
+                
+            Log::info("CSV uploaded successfully. Event fired for user: $userId");
+            }
             return response()->json([
                 'success' => true,
                 'msg' => 'Existing data cleared and new activity data processed successfully',

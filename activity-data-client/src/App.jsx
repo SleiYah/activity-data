@@ -6,6 +6,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Navbar from './pages/Navbar';
 import Dashboard from './pages/Dashboard';
+import AiPredictions from './pages/AiPredictions';
 
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated } = useSelector(state => state.auth);
@@ -31,6 +32,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <Dashboard />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/predictions" 
+              element={
+                <ProtectedRoute>
+                  <AiPredictions />
                 </ProtectedRoute>
               } 
             />

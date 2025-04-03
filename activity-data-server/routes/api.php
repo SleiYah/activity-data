@@ -26,6 +26,8 @@ Route::group(["prefix" => "v0.1"], function () {
             Route::post('/deviations', [AiPredictionController::class, 'detectPatternDeviations']);
             Route::post('/trends', [AiPredictionController::class, 'predictFutureTrends']);
             Route::post('/insights', [AiPredictionController::class, 'generateInsights']);
+            Route::get('/get-predictions', [AiPredictionController::class, 'getUserPredictions']);
+
         });
         Route::post('/logout', [AuthController::class, 'logout']);
     });

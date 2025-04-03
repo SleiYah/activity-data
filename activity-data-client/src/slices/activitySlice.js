@@ -1,7 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
-// Thunk to fetch daily activity trends
 export const fetchDailyTrends = createAsyncThunk(
   "activity/fetchDailyTrends",
   async (days = 30, { rejectWithValue }) => {
@@ -14,7 +13,6 @@ export const fetchDailyTrends = createAsyncThunk(
   }
 );
 
-// Thunk to fetch weekly activity trends
 export const fetchWeeklyTrends = createAsyncThunk(
   "activity/fetchWeeklyTrends",
   async (weeks = 4, { rejectWithValue }) => {
@@ -27,7 +25,6 @@ export const fetchWeeklyTrends = createAsyncThunk(
   }
 );
 
-// Thunk to fetch activity summary
 export const fetchActivitySummary = createAsyncThunk(
   "activity/fetchActivitySummary",
   async (_, { rejectWithValue }) => {
@@ -40,7 +37,6 @@ export const fetchActivitySummary = createAsyncThunk(
   }
 );
 
-// Simple activity slice
 const activitySlice = createSlice({
   name: "activity",
   initialState: {
@@ -68,7 +64,6 @@ const activitySlice = createSlice({
     }
   },
   extraReducers: (builder) => {
-    // Handle daily trends
     builder
       .addCase(fetchDailyTrends.pending, (state) => {
         state.dailyTrends.loading = true;
@@ -83,7 +78,6 @@ const activitySlice = createSlice({
         state.dailyTrends.error = action.payload?.msg || "Failed to fetch daily trends";
       })
       
-      // Handle weekly trends
       .addCase(fetchWeeklyTrends.pending, (state) => {
         state.weeklyTrends.loading = true;
         state.weeklyTrends.error = null;
@@ -97,7 +91,6 @@ const activitySlice = createSlice({
         state.weeklyTrends.error = action.payload?.msg || "Failed to fetch weekly trends";
       })
       
-      // Handle activity summary
       .addCase(fetchActivitySummary.pending, (state) => {
         state.summary.loading = true;
         state.summary.error = null;

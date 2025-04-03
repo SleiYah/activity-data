@@ -1,0 +1,29 @@
+.predictions-container {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 15px;
+  }
+  
+  .predictions-container h2 {
+    margin-bottom: 20px;
+  }
+  
+  .prediction-item {
+    margin-bottom: 25px;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: white;
+  }
+  
+  .prediction-item h3 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .prediction-text {
+    line-height: 1.6;
+    white-space: pre-line;
+  }

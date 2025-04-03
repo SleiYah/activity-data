@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { logout } from '../slices/authSlice';
 import "../styles/Navbar.css"
+
 function Navbar() {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const dispatch = useDispatch();
@@ -41,6 +42,9 @@ function Navbar() {
             <ul className="navbar-nav">
               <li className="nav-item">
                 <Link to="/dashboard">Dashboard</Link>
+              </li>
+              <li className="nav-item">
+                <Link to="/predictions">AI Predictions</Link>
               </li>
               <li className="nav-item">
                 <button 

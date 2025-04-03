@@ -21,16 +21,43 @@ class AiPredictionController extends Controller
         $this->activityDetailController = $activityDetailController;
         $this->geminiApiKey = env('GEMINI_API_KEY');
         $this->geminiApiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
-
     }
 
- 
+    public function getUserPredictions()
+    {
+        try {
+            $userId = Auth::id();
+            
+            $predictions = AiPrediction::where('user_id', $userId)
+                ->orderBy('created_at', 'desc')
+                ->get()
+                ->groupBy('prediction_type')
+                ->map(function ($group) {
+                    return $group->first(); 
+                })
+                ->values();
+            
+            return response()->json([
+                'success' => true,
+                'predictions' => $predictions
+            ]);
+            
+        } catch (\Exception $e) {
+            Log::error('Error fetching user predictions: ' . $e->getMessage());
+            
+            return response()->json([
+                'success' => false,
+                'msg' => 'Failed to fetch predictions',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
     public function predictGoalAchievement(Request $request)
     {
         try {
             $userId = Auth::id();
             $stepsGoal = $request->input('goal', 10000); 
-            
             
             $activityResponse = $this->activityDetailController->getDailyTrends(new Request([
                 'days' => 30 
@@ -45,7 +72,6 @@ class AiPredictionController extends Controller
                 ], 400);
             }
             
-            
             $formattedData = [];
             foreach ($activityData as $day) {
                 $formattedData[] = [
@@ -54,10 +80,8 @@ class AiPredictionController extends Controller
                 ];
             }
             
-            
             $summaryResponse = $this->activityDetailController->getActivitySummary();
             $summaryData = json_decode($summaryResponse->getContent());
-            
             
             $prompt = "Based on the following historical activity data, predict whether the user will achieve their daily steps goal of {$stepsGoal} steps tomorrow. ";
             $prompt .= "User's average daily steps: " . $summaryData->allTime->avgSteps . ". ";
@@ -66,12 +90,9 @@ class AiPredictionController extends Controller
             $prompt .= "Your response should be conversational and encouraging, as if you're talking directly to the user. Use a friendly, supportive tone. ";
             $prompt .= "Include specific observations about their data that show you've analyzed their personal patterns. ";
             $prompt .= "Mention specific dates or trends when relevant. Add a motivational tip at the end. ";
-            $prompt .= "While being conversational, make sure to still return your answer as valid JSON in this format: ";
-            $prompt .= "{\"prediction\": \"yes\" or \"no\", \"confidence_percentage\": number, \"reasoning\": \"your conversational explanation here\"}";
-            
+            $prompt .= "Give a direct and straightforward answer that includes whether they will likely achieve their goal and why.";
             
             $response = $this->callGeminiApi($prompt);
-            
             
             $prediction = new AiPrediction();
             $prediction->user_id = $userId;
@@ -81,7 +102,7 @@ class AiPredictionController extends Controller
             
             return response()->json([
                 'success' => true,
-                'prediction' => json_decode($response)
+                'prediction' => $response
             ]);
             
         } catch (\Exception $e) {
@@ -95,13 +116,11 @@ class AiPredictionController extends Controller
         }
     }
     
-  
     public function detectPatternDeviations(Request $request)
     {
         try {
             $userId = Auth::id();
             $days = $request->input('days', 60); 
-            
             
             $activityResponse = $this->activityDetailController->getDailyTrends(new Request([
                 'days' => $days
@@ -116,7 +135,6 @@ class AiPredictionController extends Controller
                 ], 400);
             }
             
-            
             $prompt = "You are an AI fitness analyst. Analyze this fitness activity data and identify exactly 3 days when the user's activity significantly deviates from their normal pattern: " . json_encode($activityData) . " ";
             $prompt .= "Focus on clear statistical outliers where activity levels are notably different from the user's averages. ";
             $prompt .= "For each deviation you identify: ";
@@ -124,13 +142,9 @@ class AiPredictionController extends Controller
             $prompt .= "2. Use supportive language even for low-activity days ";
             $prompt .= "3. Make observations specific to their data patterns ";
             $prompt .= "4. Note the approximate percentage difference from their average ";
-            $prompt .= "IMPORTANT: Your response MUST be a valid JSON array with exactly this format and no additional text before or after: ";
-            $prompt .= "[{\"date\": \"YYYY-MM-DD\", \"deviation_type\": \"higher\" or \"lower\", \"metrics_affected\": [\"steps\", \"distance\", \"activeMinutes\"], \"magnitude\": \"XX% above/below average\", \"explanation\": \"your friendly explanation\"}]";
-            $prompt .= " Ensure your response is correctly formatted as valid JSON that can be parsed with JSON.parse().";
-            
+            $prompt .= "Provide your answer as a simple paragraph text, not JSON format. Just give a plain text answer about the 3 notable days you identified and what made them unusual.";
             
             $response = $this->callGeminiApi($prompt);
-            
             
             $prediction = new AiPrediction();
             $prediction->user_id = $userId;
@@ -140,7 +154,7 @@ class AiPredictionController extends Controller
             
             return response()->json([
                 'success' => true,
-                'deviations' => json_decode($response)
+                'prediction' => $response
             ]);
             
         } catch (\Exception $e) {
@@ -160,7 +174,6 @@ class AiPredictionController extends Controller
             $userId = Auth::id();
             $daysToPredict = $request->input('days_to_predict', 7); 
             
-            
             $activityResponse = $this->activityDetailController->getDailyTrends(new Request([
                 'days' => 90
             ]));
@@ -174,7 +187,6 @@ class AiPredictionController extends Controller
                 ], 400);
             }
             
-            
             $formattedDailyData = [];
             foreach ($activityData as $day) {
                 $formattedDailyData[] = [
@@ -183,18 +195,14 @@ class AiPredictionController extends Controller
                 ];
             }
             
-            
             $prompt = "Based on this historical active minutes data for the past " . count($activityData) . " days: " . json_encode($formattedDailyData) . ", ";
             $prompt .= "predict the user's active minutes for the next {$daysToPredict} days. ";
             $prompt .= "Consider day-of-week patterns and recent trends in daily activity. ";
             $prompt .= "Be conversational and personalized in your analysis, as if you're talking directly to the user. ";
             $prompt .= "Include observations about their specific patterns and any interesting insights you discover. ";
-            $prompt .= "Return your prediction as a JSON array of objects, one for each future day, with the format: ";
-            $prompt .= "{\"date\": \"YYYY-MM-DD\", \"activeMinutes\": number, \"confidence\": percentage, \"explanation\": \"brief personalized explanation for this day's prediction\"}";
-            
+            $prompt .= "Provide your answer as a simple paragraph text, not JSON format. Just give a straightforward prediction for each of the next {$daysToPredict} days.";
             
             $response = $this->callGeminiApi($prompt);
-            
             
             $prediction = new AiPrediction();
             $prediction->user_id = $userId;
@@ -204,7 +212,7 @@ class AiPredictionController extends Controller
             
             return response()->json([
                 'success' => true,
-                'predictions' => json_decode($response)
+                'prediction' => $response
             ]);
             
         } catch (\Exception $e) {
@@ -218,17 +226,13 @@ class AiPredictionController extends Controller
         }
     }
     
-    
-   
     public function generateInsights()
     {
         try {
             $userId = Auth::id();
             
-            
             $summaryResponse = $this->activityDetailController->getActivitySummary();
             $summaryData = json_decode($summaryResponse->getContent());
-            
             
             $dailyResponse = $this->activityDetailController->getDailyTrends(new Request([
                 'days' => 30
@@ -242,7 +246,6 @@ class AiPredictionController extends Controller
                 ], 400);
             }
             
-            
             $prompt = "You are a fitness and health AI assistant. Analyze this user's activity data and provide ONE comprehensive, personalized insight. ";
             $prompt .= "Daily activity data: " . json_encode($dailyData) . ". ";
             $prompt .= "Activity summary: " . json_encode($summaryData) . ". ";
@@ -253,12 +256,9 @@ class AiPredictionController extends Controller
             $prompt .= "- A concrete, actionable suggestion they can implement immediately ";
             $prompt .= "Make your response conversational and motivational, as if you're a personal coach talking directly to them. ";
             $prompt .= "Highlight specific data points from their history to make it personalized. ";
-            $prompt .= "Format your response as a single JSON object: ";
-            $prompt .= "{\"title\": \"catchy title for the insight\", \"insight\": \"your conversational, personalized insight\", \"action_step\": \"one clear action they can take\"}";
-            
+            $prompt .= "Provide your answer as a simple paragraph text, not JSON format. Start with a catchy title followed by your insights and end with a clear action step.";
             
             $response = $this->callGeminiApi($prompt);
-            
             
             $prediction = new AiPrediction();
             $prediction->user_id = $userId;
@@ -268,7 +268,7 @@ class AiPredictionController extends Controller
             
             return response()->json([
                 'success' => true,
-                'insight' => json_decode($response)
+                'prediction' => $response
             ]);
             
         } catch (\Exception $e) {
@@ -282,8 +282,6 @@ class AiPredictionController extends Controller
         }
     }
     
- 
- 
     protected function callGeminiApi($prompt)
     {
         $response = Http::withOptions([
@@ -303,13 +301,11 @@ class AiPredictionController extends Controller
                 'topK' => 40,
                 'topP' => 0.95,
                 'maxOutputTokens' => 1024,
-                'responseMimeType' => 'application/json'
             ]
         ]);
         
         if ($response->successful()) {
             $data = $response->json();
-            
             
             if (isset($data['candidates'][0]['content']['parts'][0]['text'])) {
                 return $data['candidates'][0]['content']['parts'][0]['text'];
