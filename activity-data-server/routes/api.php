@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ActivityDetailController;
+use App\Http\Controllers\AiPredictionController;
 use App\Http\Controllers\AuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -19,6 +20,12 @@ Route::group(["prefix" => "v0.1"], function () {
             Route::get('/summary', [ActivityDetailController::class, 'getActivitySummary']);
     
     
+        });
+        Route::group(["prefix" => "predictions"], function() {
+            Route::post('/goal', [AiPredictionController::class, 'predictGoalAchievement']);
+            Route::post('/deviations', [AiPredictionController::class, 'detectPatternDeviations']);
+            Route::post('/trends', [AiPredictionController::class, 'predictFutureTrends']);
+            Route::post('/insights', [AiPredictionController::class, 'generateInsights']);
         });
         Route::post('/logout', [AuthController::class, 'logout']);
     });
